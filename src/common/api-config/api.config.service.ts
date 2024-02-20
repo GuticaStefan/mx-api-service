@@ -236,6 +236,15 @@ export class ApiConfigService {
     return tmpUrl;
   }
 
+  getAssetsCdnUrl(): string {
+    const assetsCdnUrl = this.configService.get<string>('urls.assetsCdn');
+    if (!assetsCdnUrl) {
+      throw new Error('No assets cdn url present');
+    }
+
+    return assetsCdnUrl;
+  }
+
   getIsTransactionProcessorCronActive(): boolean {
     const isCronActive = this.configService.get<boolean>('cron.transactionProcessor');
     if (isCronActive === undefined) {

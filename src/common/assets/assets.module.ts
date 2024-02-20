@@ -7,6 +7,7 @@ import { ApiConfigModule } from "../api-config/api.config.module";
   imports: [
     DynamicModuleUtils.getCacheModule(),
     ApiConfigModule,
+    DynamicModuleUtils.getApiModule(),
   ],
   providers: [
     AssetsService,
