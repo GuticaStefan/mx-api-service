@@ -1,6 +1,5 @@
 import { CacheService } from "@multiversx/sdk-nestjs-cache";
 import { Test } from "@nestjs/testing";
-import { ApiConfigService } from "src/common/api-config/api.config.service";
 import { AssetsService } from "src/common/assets/assets.service";
 import { QueryPagination } from "src/common/entities/query.pagination";
 import { GatewayService } from "src/common/gateway/gateway.service";
@@ -77,12 +76,6 @@ describe('Token Service', () => {
           useValue: {
             getAddressNft: jest.fn(),
             getAddressEsdt: jest.fn(),
-          },
-        },
-        {
-          provide: ApiConfigService,
-          useValue: {
-            getIsIndexerV3FlagActive: jest.fn(),
           },
         },
         {

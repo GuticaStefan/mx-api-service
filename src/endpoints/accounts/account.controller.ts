@@ -27,7 +27,6 @@ import { AccountHistory } from "./entities/account.history";
 import { AccountEsdtHistory } from "./entities/account.esdt.history";
 import { EsdtDataSource } from '../esdt/entities/esdt.data.source';
 import { TransferService } from '../transfers/transfer.service';
-import { ApiConfigService } from 'src/common/api-config/api.config.service';
 import { Transaction } from '../transactions/entities/transaction';
 import { ProviderStake } from '../stake/entities/provider.stake';
 import { TokenDetailedWithBalance } from '../tokens/entities/token.detailed.with.balance';
@@ -72,7 +71,6 @@ export class AccountController {
     private readonly scResultService: SmartContractResultService,
     private readonly collectionService: CollectionService,
     private readonly transferService: TransferService,
-    private readonly apiConfigService: ApiConfigService,
     private readonly delegationService: DelegationService,
   ) { }
 
@@ -853,10 +851,6 @@ export class AccountController {
     @Query('withBlockInfo', new ParseBoolPipe) withBlockInfo?: boolean,
     @Query('senderOrReceiver', ParseAddressPipe) senderOrReceiver?: string,
   ): Promise<Transaction[]> {
-    if (!this.apiConfigService.getIsIndexerV3FlagActive()) {
-      throw new HttpException('Endpoint not live yet', HttpStatus.NOT_IMPLEMENTED);
-    }
-
     const options = TransactionQueryOptions.applyDefaultOptions(size, { withScamInfo, withUsername, withBlockInfo });
 
     return await this.transferService.getTransfers(new TransactionFilter({
@@ -911,10 +905,6 @@ export class AccountController {
     @Query('after', ParseIntPipe) after?: number,
     @Query('senderOrReceiver', ParseAddressPipe) senderOrReceiver?: string,
   ): Promise<number> {
-    if (!this.apiConfigService.getIsIndexerV3FlagActive()) {
-      throw new HttpException('Endpoint not live yet', HttpStatus.NOT_IMPLEMENTED);
-    }
-
     return await this.transferService.getTransfersCount(new TransactionFilter({
       address,
       senders: sender,
@@ -949,10 +939,6 @@ export class AccountController {
     @Query('after', ParseIntPipe) after?: number,
     @Query('senderOrReceiver', ParseAddressPipe) senderOrReceiver?: string,
   ): Promise<number> {
-    if (!this.apiConfigService.getIsIndexerV3FlagActive()) {
-      throw new HttpException('Endpoint not live yet', HttpStatus.NOT_IMPLEMENTED);
-    }
-
     return await this.transferService.getTransfersCount(new TransactionFilter({
       address,
       senders: sender,

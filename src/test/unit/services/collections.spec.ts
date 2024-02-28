@@ -123,7 +123,6 @@ describe('CollectionService', () => {
           useValue:
           {
             getCollectionPropertiesFromGateway: jest.fn(),
-            getIsIndexerV3FlagActive: jest.fn(),
             getEsdtContractAddress: jest.fn(),
           },
         },

@@ -23,8 +23,6 @@ import { KeysService } from "src/endpoints/keys/keys.service";
 import { ProviderService } from "src/endpoints/providers/provider.service";
 import { SmartContractResultService } from "src/endpoints/sc-results/scresult.service";
 import { StakeService } from "src/endpoints/stake/stake.service";
-import { TransactionFilter } from "src/endpoints/transactions/entities/transaction.filter";
-import { TransactionType } from "src/endpoints/transactions/entities/transaction.type";
 import { TransactionService } from "src/endpoints/transactions/transaction.service";
 import { TransferService } from "src/endpoints/transfers/transfer.service";
 import { UsernameService } from "src/endpoints/usernames/username.service";
@@ -36,9 +34,7 @@ describe('Account Service', () => {
   let cacheService: CacheService;
   let apiService: ApiService;
   let apiConfigService: ApiConfigService;
-  let transactionService: TransactionService;
   let transferService: TransferService;
-  let smartContractResultService: SmartContractResultService;
   let assetsService: AssetsService;
 
   beforeEach((async () => {
@@ -86,7 +82,6 @@ describe('Account Service', () => {
           provide: ApiConfigService,
           useValue: {
             getVerifierUrl: jest.fn(),
-            getIsIndexerV3FlagActive: jest.fn(),
             getDelegationContractAddress: jest.fn(),
             getAuctionContractAddress: jest.fn(),
             getStakingContractAddress: jest.fn(),
@@ -166,9 +161,7 @@ describe('Account Service', () => {
     cacheService = moduleRef.get<CacheService>(CacheService);
     apiService = moduleRef.get<ApiService>(ApiService);
     apiConfigService = moduleRef.get<ApiConfigService>(ApiConfigService);
-    transactionService = moduleRef.get<TransactionService>(TransactionService);
     transferService = moduleRef.get<TransferService>(TransferService);
-    smartContractResultService = moduleRef.get<SmartContractResultService>(SmartContractResultService);
     assetsService = moduleRef.get<AssetsService>(AssetsService);
   }));
 
@@ -311,67 +304,30 @@ describe('Account Service', () => {
   });
 
   describe('getAccountTxCount', () => {
-    it('should return account transactions count from transaction service if indexer-v3 is false', async () => {
+    it('should return account transactions count from transaction service', async () => {
       const address = 'erd1qga7ze0l03chfgru0a32wxqf2226nzrxnyhzer9lmudqhjgy7ycqjjyknz';
       const expectedTxCount = 100;
 
-      jest.spyOn(apiConfigService, 'getIsIndexerV3FlagActive').mockReturnValue(false);
-      jest.spyOn(transactionService, 'getTransactionCountForAddress').mockResolvedValue(expectedTxCount);
-
-      const result = await service.getAccountTxCount(address);
-
-      expect(transactionService.getTransactionCountForAddress).toHaveBeenCalledWith(address);
-      expect(transferService.getTransfersCount).not.toHaveBeenCalled();
-      expect(result).toStrictEqual(expectedTxCount);
-    });
-
-    it('should return account transactions count from transfer service if indexer-v3 is true', async () => {
-      const address = 'erd1qga7ze0l03chfgru0a32wxqf2226nzrxnyhzer9lmudqhjgy7ycqjjyknz';
-      const expectedTxCount = 100;
-
-      jest.spyOn(apiConfigService, 'getIsIndexerV3FlagActive').mockReturnValue(true);
       jest.spyOn(transferService, 'getTransfersCount').mockResolvedValue(expectedTxCount);
 
       const result = await service.getAccountTxCount(address);
 
-      expect(transferService.getTransfersCount).toHaveBeenCalledWith(new TransactionFilter(
-        { address: address, functions: [], receivers: [], senders: [], type: TransactionType.Transaction }));
-
-      expect(transactionService.getTransactionCountForAddress).not.toHaveBeenCalled();
+      expect(transferService.getTransfersCount).toHaveBeenCalled();
       expect(result).toStrictEqual(expectedTxCount);
     });
   });
 
   describe('getAccountScResults', () => {
-    it('should return account smart contract results from smartContractResult service if indexer-v3 is false',
+    it('should return account smart contract results from transferService',
       async () => {
         const address = "erd1qga7ze0l03chfgru0a32wxqf2226nzrxnyhzer9lmudqhjgy7ycqjjyknz";
         const expectedTxCount = 100;
 
-        jest.spyOn(apiConfigService, 'getIsIndexerV3FlagActive').mockReturnValue(false);
-        jest.spyOn(smartContractResultService, 'getAccountScResultsCount').mockResolvedValue(expectedTxCount);
-
-        const result = await service.getAccountScResults(address);
-
-        expect(smartContractResultService.getAccountScResultsCount).toHaveBeenCalledWith(address);
-        expect(transferService.getTransfersCount).not.toHaveBeenCalled();
-        expect(result).toStrictEqual(expectedTxCount);
-      });
-
-    it('should return account smart contract results from transfer service if indexer-v3 is true',
-      async () => {
-        const address = "erd1qga7ze0l03chfgru0a32wxqf2226nzrxnyhzer9lmudqhjgy7ycqjjyknz";
-        const expectedTxCount = 100;
-
-        jest.spyOn(apiConfigService, 'getIsIndexerV3FlagActive').mockReturnValue(true);
         jest.spyOn(transferService, 'getTransfersCount').mockResolvedValue(expectedTxCount);
 
         const result = await service.getAccountScResults(address);
 
-        expect(transferService.getTransfersCount).toHaveBeenCalledWith(new TransactionFilter(
-          { address: address, functions: [], receivers: [], senders: [], type: TransactionType.SmartContractResult }));
-
-        expect(smartContractResultService.getAccountScResultsCount).not.toHaveBeenCalledWith(address);
+        expect(transferService.getTransfersCount).toHaveBeenCalled();
         expect(result).toStrictEqual(expectedTxCount);
       });
   });

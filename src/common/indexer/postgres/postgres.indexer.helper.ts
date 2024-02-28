@@ -189,7 +189,7 @@ export class PostgresIndexerHelper {
       query = query.andWhere('identifier IN (:...identifiers)', { identifiers: filter.identifiers });
     }
 
-    // if (filter.isWhitelistedStorage !== undefined && this.apiConfigService.getIsIndexerV3FlagActive()) {
+    // if (filter.isWhitelistedStorage !== undefined) {
     //   query = query.withMustCondition(QueryType.Nested("data", { "data.whiteListedStorage": filter.isWhitelistedStorage }));
     // }
 

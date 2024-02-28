@@ -26,7 +26,6 @@ describe('NftService', () => {
           useValue: {
             getExternalMediaUrl: jest.fn(),
             isNftExtendedAttributesEnabled: jest.fn(),
-            getIsIndexerV3FlagActive: jest.fn(),
             getNftExtendedAttributesNsfwThreshold: jest.fn(),
           },
         },
