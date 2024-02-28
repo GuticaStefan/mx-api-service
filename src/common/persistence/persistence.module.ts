@@ -5,8 +5,6 @@ import { ApiConfigModule } from "../api-config/api.config.module";
 import { ApiConfigService } from "../api-config/api.config.service";
 import { HotSwappableSettingDb } from "./entities/hot.swappable.setting";
 import { KeybaseConfirmationDb } from "./entities/keybase.confirmation.db";
-import { NftMediaDb } from "./entities/nft.media.db";
-import { NftMetadataDb } from "./entities/nft.metadata.db";
 import { NftTraitSummaryDb } from "./entities/nft.trait.summary.db";
 import { PersistenceService } from "./persistence.service";
 
@@ -21,14 +19,6 @@ export class PersistenceModule {
         module: PersistenceModule,
         imports: [],
         providers: [
-          {
-            provide: getRepositoryToken(NftMetadataDb),
-            useValue: {},
-          },
-          {
-            provide: getRepositoryToken(NftMediaDb),
-            useValue: {},
-          },
           {
             provide: getRepositoryToken(NftTraitSummaryDb),
             useValue: {},
@@ -56,7 +46,7 @@ export class PersistenceModule {
 
             const options: TypeOrmModuleOptions = {
               type: 'mongodb',
-              entities: [NftMetadataDb, NftMediaDb, NftTraitSummaryDb, KeybaseConfirmationDb, HotSwappableSettingDb],
+              entities: [NftMediaDb, NftTraitSummaryDb, KeybaseConfirmationDb, HotSwappableSettingDb],
               url: apiConfigService.getDatabaseUrl(),
               keepAlive: 120000,
               sslValidate: false,
@@ -69,10 +59,10 @@ export class PersistenceModule {
           },
           inject: [ApiConfigService],
         }),
-        TypeOrmModule.forFeature([NftMetadataDb, NftMediaDb, NftTraitSummaryDb, KeybaseConfirmationDb, HotSwappableSettingDb]),
+        TypeOrmModule.forFeature([NftMediaDb, NftTraitSummaryDb, KeybaseConfirmationDb, HotSwappableSettingDb]),
       ],
       providers: [PersistenceService],
-      exports: [PersistenceService, TypeOrmModule.forFeature([NftMetadataDb, NftMediaDb, NftTraitSummaryDb, KeybaseConfirmationDb, HotSwappableSettingDb])],
+      exports: [PersistenceService, TypeOrmModule.forFeature([NftMediaDb, NftTraitSummaryDb, KeybaseConfirmationDb, HotSwappableSettingDb])],
     };
   }
 }

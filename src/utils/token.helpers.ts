@@ -3,28 +3,11 @@ import { Nft } from "src/endpoints/nfts/entities/nft";
 import { NftType } from "src/endpoints/nfts/entities/nft.type";
 import { CollectionRoles } from "src/endpoints/tokens/entities/collection.roles";
 import { TokenRoles } from "src/endpoints/tokens/entities/token.roles";
-import { ApiUtils } from '@multiversx/sdk-nestjs-http';
 import '@multiversx/sdk-nestjs-common/lib/utils/extensions/string.extensions';
 
 export class TokenHelpers {
   static canBool(string: string) {
     return string.split('-').pop() === 'true';
-  }
-
-  static computeNftUri(uri: string, prefix: string) {
-    uri = ApiUtils.replaceUri(uri, 'https://ipfs.io/ipfs', prefix);
-    uri = ApiUtils.replaceUri(uri, 'https://gateway.ipfs.io/ipfs', prefix);
-    uri = ApiUtils.replaceUri(uri, 'https://gateway.pinata.cloud/ipfs', prefix);
-    uri = ApiUtils.replaceUri(uri, 'https://dweb.link/ipfs', prefix);
-    uri = ApiUtils.replaceUri(uri, 'ipfs:/', prefix);
-    uri = uri.replace(/https\:\/\/\w*\.mypinata\.cloud\/ipfs/, prefix);
-
-    if (uri.endsWith('.ipfs.dweb.link')) {
-      const id = uri.removeSuffix('.ipfs.dweb.link').removePrefix('https://');
-      uri = `${prefix}/${id}`;
-    }
-
-    return uri;
   }
 
   static getUrlHash(url: string) {

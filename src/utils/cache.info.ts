@@ -231,26 +231,6 @@ export class CacheInfo {
     };
   }
 
-  static NftMetadata(identifier: string): CacheInfo {
-    return {
-      key: `nftMetadata:${identifier}`,
-      ttl: Constants.oneMinute() * 10,
-    };
-  }
-
-  static NftMedia(identifier: string): CacheInfo {
-    return {
-      key: `nftMedia:${identifier}`,
-      ttl: Constants.oneMinute() * 10,
-    };
-  }
-
-  static NftMediaProperties(uri: string): CacheInfo {
-    return {
-      key: `nftMediaProperties:${uri}`,
-      ttl: Constants.oneHour(),
-    };
-  }
 
   static TokenLockedAccounts(identifier: string): CacheInfo {
     return {
@@ -535,19 +515,7 @@ export class CacheInfo {
     };
   }
 
-  static PendingMediaGet(identifier: string): CacheInfo {
-    return {
-      key: `pendingMediaGet:${identifier}`,
-      ttl: Constants.oneHour() * 12,
-    };
-  }
 
-  static PendingMetadataGet(identifier: string): CacheInfo {
-    return {
-      key: `pendingMetadataGet:${identifier}`,
-      ttl: Constants.oneHour() * 12,
-    };
-  }
 
   static PendingGenerateThumbnail(identifier: string): CacheInfo {
     return {
