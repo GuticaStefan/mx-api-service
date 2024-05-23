@@ -71,7 +71,7 @@ export class TpsService {
   async getTpsMaxFromESRaw(): Promise<Tps> {
     const query = ElasticQuery.create()
       .withSort([{ name: 'timestamp', order: ElasticSortOrder.descending }])
-      .withPagination({ from: 0, size: 100 })
+      .withPagination({ from: 0, size: 10000 })
       .withFields(['txCount', 'timestamp']);
 
     const blocks = await this.elasticService.getList('blocks', 'hash', query);
