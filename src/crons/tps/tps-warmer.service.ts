@@ -73,6 +73,9 @@ export class TpsWarmerService {
 
   private async incrementTotalTransactions(shardId: number, totalTransactions: number, startNonce: number) {
     const incrementResult = await this.redisCacheService.incrby(CacheInfo.TransactionCountByShard(shardId).key, totalTransactions);
+
+    this.logger.log(`Incremented total transactions for shard ${shardId} by ${totalTransactions} to ${incrementResult}`);
+
     if (incrementResult === totalTransactions) {
       await this.redisCacheService.expire(CacheInfo.TransactionCountByShard(shardId).key, CacheInfo.TransactionCountByShard(shardId).ttl);
 
@@ -84,6 +87,9 @@ export class TpsWarmerService {
 
       const block = blocks[0];
       const transactionsUntilStartNonce = await this.transferService.getTransfersCount({ senderShard: shardId, before: block.timestamp });
+
+      this.logger.log(`Initialized total transactions for shard ${shardId} with ${transactionsUntilStartNonce} transactions until nonce ${startNonce}`);
+
       await this.redisCacheService.incrby(CacheInfo.TransactionCountByShard(shardId).key, transactionsUntilStartNonce);
     }
   }
@@ -133,6 +139,8 @@ export class TpsWarmerService {
     const transactionCount: number = block.numTxs;
     const timestamp: number = block.timestamp;
 
+    this.logger.log(`Processing TPS for shard ${shardId} and nonce ${nonce} with transaction count ${transactionCount}`);
+
     for (const frequency of TpsUtils.Frequencies) {
       await this.saveTps(timestamp, frequency, transactionCount);
     }
@@ -142,6 +150,7 @@ export class TpsWarmerService {
 
   private async saveTps(timestamp: number, frequency: number, transactionCount: number) {
     const timestampByFrequency = TpsUtils.getTimestampByFrequency(timestamp, frequency);
+    this.logger.log(`Saving TPS for timestamp ${timestampByFrequency} and frequency ${frequency} with transaction count ${transactionCount}`);
 
     const key = CacheInfo.TpsByTimestampAndFrequency(timestampByFrequency, frequency).key;
 
