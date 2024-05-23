@@ -25,9 +25,9 @@ export class TpsController {
   @ApiOperation({ summary: 'TPS live info', description: 'Return TPS live info' })
   @ApiOkResponse({ type: Tps })
   async getTpsLatestByFrequency(
-    @Param('frequency', new ParseEnumPipe(TpsFrequency)) frequency: TpsFrequency,
+    @Param('frequency', new ParseEnumPipe(TpsFrequency)) _frequency: TpsFrequency,
   ): Promise<Tps> {
-    return await this.tpsService.getTpsLatest(frequency);
+    return await this.tpsService.getTpsLatestFromES();
   }
 
   @Get('/max')
@@ -41,9 +41,9 @@ export class TpsController {
   @ApiOperation({ summary: 'TPS max info', description: 'Return TPS max info' })
   @ApiOkResponse({ type: Tps })
   async getTpsMaxByFrequency(
-    @Param('interval', new ParseEnumPipe(TpsInterval)) interval: TpsInterval,
+    @Param('interval', new ParseEnumPipe(TpsInterval)) _interval: TpsInterval,
   ): Promise<Tps> {
-    return await this.tpsService.getTpsMax(interval);
+    return await this.tpsService.getTpsMaxFromES();
   }
 
   @Get('/count')
@@ -65,8 +65,8 @@ export class TpsController {
   @ApiOperation({ summary: 'TPS history info', description: 'Return TPS history info' })
   @ApiOkResponse({ type: Tps, isArray: true })
   async getTpsHistoryByInterval(
-    @Param('interval', new ParseEnumPipe(TpsInterval)) interval: TpsInterval,
+    @Param('interval', new ParseEnumPipe(TpsInterval)) _interval: TpsInterval,
   ): Promise<Tps[]> {
-    return await this.tpsService.getTpsHistory(interval);
+    return await this.tpsService.getTpsHistoryFromES();
   }
 }
