@@ -18,7 +18,7 @@ export class TpsController {
   @ApiOperation({ summary: 'TPS live info', description: 'Return TPS live info' })
   @ApiOkResponse({ type: Tps })
   async getTpsLatest(): Promise<Tps> {
-    return await this.tpsService.getTpsLatest(TpsFrequency._30s);
+    return await this.tpsService.getTpsLatestFromES();
   }
 
   @Get('/latest/:frequency')
@@ -34,7 +34,7 @@ export class TpsController {
   @ApiOperation({ summary: 'TPS max info', description: 'Return TPS max info' })
   @ApiOkResponse({ type: Tps })
   async getTpsMax(): Promise<Tps> {
-    return await this.tpsService.getTpsMax(TpsInterval._1h);
+    return await this.tpsService.getTpsMaxFromES();
   }
 
   @Get('/max/:interval')
@@ -51,14 +51,14 @@ export class TpsController {
   @ApiOperation({ summary: 'Transaction count info', description: 'Return transaction count info' })
   @ApiOkResponse({ type: Number })
   async getTransactionCount(): Promise<number> {
-    return await this.tpsService.getTransactionCount();
+    return await this.tpsService.getTransactionCountFromES();
   }
 
   @Get('/history')
   @ApiOperation({ summary: 'TPS history info', description: 'Return TPS history info' })
   @ApiOkResponse({ type: Tps, isArray: true })
   async getTpsHistory(): Promise<Tps[]> {
-    return await this.tpsService.getTpsHistory(TpsInterval._1h);
+    return await this.tpsService.getTpsHistoryFromES();
   }
 
   @Get('/history/:interval')
