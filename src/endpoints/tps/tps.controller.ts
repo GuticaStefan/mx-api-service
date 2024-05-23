@@ -5,7 +5,6 @@ import { ParseEnumPipe } from "@multiversx/sdk-nestjs-common";
 import { TpsFrequency } from "./entities/tps.frequency";
 import { TpsService } from "./tps.service";
 import { TpsInterval } from "./entities/tps.interval";
-import { NoCache } from "@multiversx/sdk-nestjs-cache";
 
 @Controller('tps')
 @ApiTags('tps')
@@ -47,7 +46,6 @@ export class TpsController {
   }
 
   @Get('/count')
-  @NoCache()
   @ApiOperation({ summary: 'Transaction count info', description: 'Return transaction count info' })
   @ApiOkResponse({ type: Number })
   async getTransactionCount(): Promise<number> {
