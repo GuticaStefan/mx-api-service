@@ -5,6 +5,8 @@ import { ParseEnumPipe } from "@multiversx/sdk-nestjs-common";
 import { TpsFrequency } from "./entities/tps.frequency";
 import { TpsService } from "./tps.service";
 import { TpsInterval } from "./entities/tps.interval";
+import { TopBlock } from "./entities/top.block";
+import { DailyActivity } from "./entities/daily.activity";
 
 @Controller('tps')
 @ApiTags('tps')
@@ -66,5 +68,21 @@ export class TpsController {
     @Param('interval', new ParseEnumPipe(TpsInterval)) _interval: TpsInterval,
   ): Promise<Tps[]> {
     return await this.tpsService.getTpsHistoryFromES();
+  }
+
+  @Get('/top-blocks')
+  @ApiOperation({ summary: 'Top blocks by number of transactions', description: 'Return top blocks by number of transactions' })
+  @ApiOkResponse({ type: Tps, isArray: true })
+  async getTopBlocks(
+    @Param('interval', new ParseEnumPipe(TpsInterval)) _interval: TpsInterval,
+  ): Promise<TopBlock[]> {
+    return await this.tpsService.getTopBlocks();
+  }
+
+  @Get('/daily-activity')
+  @ApiOperation({ summary: 'Daily activity', description: 'Return daily activity' })
+  @ApiOkResponse({ type: DailyActivity, isArray: true })
+  async getDailyActivity(): Promise<DailyActivity[]> {
+    return await this.tpsService.getDailyActivity();
   }
 }

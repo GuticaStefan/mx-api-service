@@ -9,6 +9,8 @@ import { ProtocolService } from "src/common/protocol/protocol.service";
 import { ApiConfigService } from "src/common/api-config/api.config.service";
 import { ElasticQuery, ElasticService, ElasticSortOrder } from "@multiversx/sdk-nestjs-elastic";
 import { Constants } from "@multiversx/sdk-nestjs-common";
+import { TopBlock } from "./entities/top.block";
+import { DailyActivity } from "./entities/daily.activity";
 
 @Injectable()
 export class TpsService {
@@ -40,8 +42,6 @@ export class TpsService {
 
     const transactions = blocks.map(x => x.txCount);
     const maxTps = Math.max(...transactions);
-
-    console.log({ transactions, maxTps });
 
     return new Tps({
       timestamp: blocks[0].timestamp,
@@ -199,5 +199,72 @@ export class TpsService {
     const query = ElasticQuery.create();
 
     return await this.elasticService.getCount('operations', query);
+  }
+
+  async getTopBlocks(): Promise<TopBlock[]> {
+    return await this.cacheService.getOrSet<TopBlock[]>(
+      CacheInfo.TopBlocks.key,
+      async () => await this.getTopBlocksRaw(),
+      CacheInfo.TopBlocks.ttl,
+    );
+  }
+
+  async getTopBlocksRaw(): Promise<TopBlock[]> {
+    const query = ElasticQuery.create()
+      .withSort([{ name: 'txCount', order: ElasticSortOrder.descending }])
+      .withPagination({ from: 0, size: 10 })
+      .withFields(['hash', 'nonce', 'txCount']);
+
+    const blocks = await this.elasticService.getList('blocks', 'hash', query);
+
+    return blocks.map(x => new TopBlock({
+      hash: x.hash,
+      nonce: x.nonce,
+      txCount: x.txCount,
+    }));
+  }
+
+  async getDailyActivity(): Promise<DailyActivity[]> {
+    return await this.cacheService.getOrSet<DailyActivity[]>(
+      CacheInfo.DailyActivity.key,
+      async () => await this.getDailyActivityRaw(),
+      CacheInfo.DailyActivity.ttl,
+    );
+  }
+
+  async getDailyActivityRaw(): Promise<DailyActivity[]> {
+    const result: DailyActivity[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      const date = new Date().addDays(-i);
+      const dailyActivity = await this.getDailyActivityForDate(date);
+      result.push(dailyActivity);
+    }
+
+    return result;
+  }
+
+  private async getDailyActivityForDate(date: Date): Promise<DailyActivity> {
+    const startOfDay = date.startOfDay().getTimeInSeconds();
+    const endOfDay = date.addDays(1).startOfDay().getTimeInSeconds() - 1;
+
+    const transactionsQuery = ElasticQuery.create()
+      .withDateRangeFilter('timestamp', endOfDay, startOfDay);
+
+    const transactions = await this.elasticService.getCount('operations', transactionsQuery);
+
+    const maxTpsQuery = ElasticQuery.create()
+      .withDateRangeFilter('timestamp', endOfDay, startOfDay)
+      .withSort([{ name: 'txCount', order: ElasticSortOrder.descending }])
+      .withPagination({ from: 0, size: 1 })
+      .withFields(['txCount']);
+
+    const maxTps = await this.elasticService.getList('blocks', 'hash', maxTpsQuery);
+
+    return new DailyActivity({
+      date: date.toISODateString(),
+      transactions,
+      maxTps: maxTps.length > 0 ? maxTps[0].txCount : 0,
+    });
   }
 }

@@ -40,6 +40,10 @@ export class TpsWarmerService {
     const refreshTpsHistoryCronJob = new CronJob(CronExpression.EVERY_10_SECONDS, async () => await this.refreshTpsHistory());
     this.schedulerRegistry.addCronJob('refreshTpsHistory', refreshTpsHistoryCronJob);
     refreshTpsHistoryCronJob.start();
+
+    const refreshDailyActivityCronJob = new CronJob(CronExpression.EVERY_MINUTE, async () => await this.refreshDailyActivity());
+    this.schedulerRegistry.addCronJob('refreshDailyActivity', refreshDailyActivityCronJob);
+    refreshDailyActivityCronJob.start();
   }
 
   @Lock({ name: 'Block Processor', verbose: true })
@@ -69,6 +73,12 @@ export class TpsWarmerService {
 
       await this.cachingService.setRemote(CacheInfo.TpsHistoryByInterval(interval).key, tpsHistory);
     }
+  }
+
+  @Lock({ name: 'Refresh daily activity', verbose: true })
+  async refreshDailyActivity() {
+    const dailyActivity = await this.tpsService.getDailyActivityRaw();
+    await this.cachingService.set(CacheInfo.DailyActivity.key, dailyActivity, CacheInfo.DailyActivity.ttl);
   }
 
   private async incrementTotalTransactions(shardId: number, totalTransactions: number, startNonce: number) {

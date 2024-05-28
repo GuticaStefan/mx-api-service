@@ -671,4 +671,14 @@ export class CacheInfo {
       ttl: Constants.oneHour(),
     };
   }
+
+  static DailyActivity: CacheInfo = {
+    key: 'dailyActivity',
+    ttl: Constants.oneMinute() * 10,
+  };
+
+  static TopBlocks: CacheInfo = {
+    key: 'topBlocks',
+    ttl: Constants.oneMinute() * 10,
+  };
 }
