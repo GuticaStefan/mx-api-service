@@ -81,6 +81,12 @@ export class TpsWarmerService {
     await this.cachingService.set(CacheInfo.DailyActivity.key, dailyActivity, CacheInfo.DailyActivity.ttl);
   }
 
+  @Lock({ name: 'Refresh top blocks', verbose: true })
+  async refreshTopBlocks() {
+    const topBlocks = await this.tpsService.getTopBlocksRaw();
+    await this.cachingService.set(CacheInfo.TopBlocks.key, topBlocks, CacheInfo.TopBlocks.ttl);
+  }
+
   private async incrementTotalTransactions(shardId: number, totalTransactions: number, startNonce: number) {
     const incrementResult = await this.redisCacheService.incrby(CacheInfo.TransactionCountByShard(shardId).key, totalTransactions);
 
