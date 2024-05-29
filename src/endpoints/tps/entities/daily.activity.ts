@@ -6,4 +6,5 @@ export class DailyActivity {
   date: string = '';
   transactions: number = 0;
   maxTps: number = 0;
+  maxTpsBlockHash: string = '';
 }

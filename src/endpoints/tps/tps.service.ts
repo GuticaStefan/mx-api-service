@@ -257,7 +257,7 @@ export class TpsService {
       .withDateRangeFilter('timestamp', endOfDay, startOfDay)
       .withSort([{ name: 'txCount', order: ElasticSortOrder.descending }])
       .withPagination({ from: 0, size: 1 })
-      .withFields(['txCount']);
+      .withFields(['txCount', 'hash']);
 
     const maxTps = await this.elasticService.getList('blocks', 'hash', maxTpsQuery);
 
@@ -265,6 +265,7 @@ export class TpsService {
       date: date.toISODateString(),
       transactions,
       maxTps: maxTps.length > 0 ? maxTps[0].txCount : 0,
+      maxTpsBlockHash: maxTps.length > 0 ? maxTps[0].hash : '',
     });
   }
 }
