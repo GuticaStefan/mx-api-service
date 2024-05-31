@@ -22,7 +22,7 @@ import { PluginService } from './common/plugins/plugin.service';
 import { TransactionCompletedModule } from './crons/transaction.processor/transaction.completed.module';
 import { SocketAdapter } from './common/websockets/socket-adapter';
 import { ApiConfigModule } from './common/api-config/api.config.module';
-import { CacheService, CachingInterceptor, GuestCacheInterceptor, GuestCacheService } from '@multiversx/sdk-nestjs-cache';
+import { CacheService, CachingInterceptor, GuestCacheInterceptor, GuestCacheService, ScrollInterceptor } from '@multiversx/sdk-nestjs-cache';
 import { LoggerInitializer } from '@multiversx/sdk-nestjs-common';
 import { MetricsService, RequestCpuTimeInterceptor, LoggingInterceptor, LogRequestsInterceptor } from '@multiversx/sdk-nestjs-monitoring';
 import { FieldsInterceptor, ExtractInterceptor, CleanupInterceptor, PaginationInterceptor, QueryCheckInterceptor, ComplexityInterceptor, OriginInterceptor, ExcludeFieldsInterceptor } from '@multiversx/sdk-nestjs-http';
@@ -225,6 +225,7 @@ async function configurePublicApp(publicApp: NestExpressApplication, apiConfigSe
   globalInterceptors.push(new RequestCpuTimeInterceptor(metricsService));
   // @ts-ignore
   globalInterceptors.push(new LoggingInterceptor(metricsService));
+  globalInterceptors.push(new ScrollInterceptor(cachingService));
 
   const getUseRequestCachingFlag = await settingsService.getUseRequestCachingFlag();
   if (getUseRequestCachingFlag) {

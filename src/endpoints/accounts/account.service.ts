@@ -300,7 +300,7 @@ export class AccountService {
   }
 
   async getAccounts(queryPagination: QueryPagination, filter: AccountQueryOptions): Promise<Account[]> {
-    if (!filter.isSet()) {
+    if (!filter.isSet() && queryPagination.from === 0 && queryPagination.size === 25) {
       return await this.cachingService.getOrSet(
         CacheInfo.Accounts(queryPagination).key,
         async () => await this.getAccountsRaw(queryPagination, filter),

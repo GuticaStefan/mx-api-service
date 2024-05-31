@@ -14,6 +14,7 @@ import { TransactionStatus } from './entities/transaction.status';
 import { TransactionQueryOptions } from './entities/transactions.query.options';
 import { TransactionService } from './transaction.service';
 import { ParseArrayPipeOptions } from '@multiversx/sdk-nestjs-common/lib/pipes/entities/parse.array.options';
+import { Scrollable } from '@multiversx/sdk-nestjs-cache';
 
 @Controller()
 @ApiTags('transactions')
@@ -24,6 +25,7 @@ export class TransactionController {
   @ApiOperation({ summary: 'Transaction list', description: 'Returns a list of transactions available on the blockchain.' })
   @ApplyComplexity({ target: TransactionDetailed })
   @ApiOkResponse({ type: [Transaction] })
+  @Scrollable({ collection: 'operations' })
   @ApiQuery({ name: 'sender', description: 'Address of the transaction sender', required: false })
   @ApiQuery({ name: 'receiver', description: 'Search by multiple receiver addresses, comma-separated', required: false })
   @ApiQuery({ name: 'token', description: 'Identifier of the token', required: false })

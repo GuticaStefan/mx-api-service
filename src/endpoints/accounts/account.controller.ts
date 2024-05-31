@@ -57,6 +57,7 @@ import { AccountKeyFilter } from './entities/account.key.filter';
 import { ScamType } from 'src/common/entities/scam-type.enum';
 import { DeepHistoryInterceptor } from 'src/interceptors/deep-history.interceptor';
 import { MexPairType } from '../mex/entities/mex.pair.type';
+import { Scrollable } from '@multiversx/sdk-nestjs-cache';
 
 @Controller()
 @ApiTags('accounts')
@@ -95,7 +96,8 @@ export class AccountController {
   @ApiQuery({ name: 'tags', description: 'Filter accounts by assets tags', required: false })
   @ApiQuery({ name: 'excludeTags', description: 'Exclude specific tags from result', required: false })
   @ApiQuery({ name: 'hasAssets', description: 'Returns a list of accounts that have assets', required: false })
-  getAccounts(
+  @Scrollable({ collection: 'accounts' })
+  async getAccounts(
     @Query('from', new DefaultValuePipe(0), ParseIntPipe) from: number,
     @Query("size", new DefaultValuePipe(25), ParseIntPipe) size: number,
     @Query("ownerAddress", ParseAddressPipe) ownerAddress?: string,
@@ -127,7 +129,7 @@ export class AccountController {
         hasAssets,
       });
     queryOptions.validate(size);
-    return this.accountService.getAccounts(
+    return await this.accountService.getAccounts(
       new QueryPagination({ from, size }),
       queryOptions,
     );
